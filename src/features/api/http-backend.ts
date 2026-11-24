@@ -121,7 +121,7 @@ export class HttpBackend implements BackendAdapter {
   }
 
   setToken(token: string): Promise<TokenStatus> {
-    return post<TokenStatus>('/api/token', { token });
+    return put<TokenStatus>('/api/token', { token });
   }
 
   clearToken(): Promise<void> {

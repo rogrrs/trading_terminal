@@ -6,6 +6,8 @@ import { useSettingsStore } from '@/stores/settings';
 import { useTerminalStore } from '@/stores/terminal';
 import { extendRay, hitTestDrawing, pointToXY, rectOf, type XY } from './drawingGeometry';
 
+const EMPTY_DRAWINGS: Drawing[] = [];
+
 interface DrawingLayerProps {
   chart: IChartApi;
   series: ISeriesApi<'Candlestick'>;
@@ -35,7 +37,7 @@ export function DrawingLayer({ chart, series }: DrawingLayerProps) {
   const symbol = useTerminalStore((state) => state.instrument?.id ?? '');
   const colors = useSettingsStore((state) => state.chart);
   const accent = useSettingsStore((state) => state.accent);
-  const drawings = useDrawingStore((state) => (symbol ? state.bySymbol[symbol] ?? [] : []));
+  const drawings = useDrawingStore((state) => (symbol ? state.bySymbol[symbol] : undefined)) ?? EMPTY_DRAWINGS;
   const addDrawing = useDrawingStore((state) => state.add);
   const updatePoints = useDrawingStore((state) => state.updatePoints);
   const removeDrawing = useDrawingStore((state) => state.remove);

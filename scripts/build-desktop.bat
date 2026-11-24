@@ -2,7 +2,7 @@
 rem ============================================================================
 rem  Trading Terminal: build the Windows desktop application (Tauri v2).
 rem  Installs the Rust toolchain if it is missing, then runs npm run desktop:build.
-rem  Output: src-tauri\target\release\bundle\
+rem  Output: target\release\bundle\
 rem  ASCII only, CRLF line endings.
 rem ============================================================================
 setlocal
@@ -43,7 +43,7 @@ if errorlevel 1 goto :err
 
 echo.
 echo Desktop build finished.
-echo Installer: src-tauri\target\release\bundle\
+echo Installer: target\release\bundle\
 exit /b 0
 
 :err_node

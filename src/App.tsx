@@ -1,4 +1,5 @@
 import { TooltipProvider } from '@/components/ui/tooltip';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { Toaster } from '@/components/ui/toaster';
 import { TopBar } from '@/components/layout/TopBar';
 import { MobileNav } from '@/components/layout/MobileNav';
@@ -27,6 +28,7 @@ export default function App() {
 
   return (
     <TooltipProvider delayDuration={250}>
+      <ErrorBoundary>
       <div className="flex h-full min-h-0 flex-col overflow-hidden">
         <TopBar />
 
@@ -81,6 +83,7 @@ export default function App() {
       <SettingsDialog />
       <TokenDialog />
       <Toaster />
+      </ErrorBoundary>
     </TooltipProvider>
   );
 }

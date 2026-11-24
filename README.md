@@ -89,7 +89,7 @@ npm run dev            # Vite :5173 + Fastify :5175, /api проксируетс
 | Файл | Что делает |
 |---|---|
 | `build.bat` | ставит зависимости и собирает веб-клиент + API-сервер (`dist/`, `dist-server/`) |
-| `build-desktop.bat` | ставит Rust при необходимости и собирает десктоп-приложение Tauri |
+| `build-desktop.bat` | ставит Rust при необходимости и собирает десктоп-приложение Tauri (установщик в `target/release/bundle/`) |
 | `start.bat` | запускает веб-версию (`http://127.0.0.1:5175`) |
 | `start-desktop.bat` | запускает собранный `.exe` десктоп-версии |
 | `update.bat` | обновляет код с GitHub и пересобирает; `update.bat --desktop` — пересобирает и десктоп |
@@ -102,7 +102,7 @@ npm run dev            # Vite :5173 + Fastify :5175, /api проксируетс
 
 ```bash
 rustup toolchain install stable      # один раз
-npm run desktop:build                # установщик в src-tauri/target/release/bundle
+npm run desktop:build                # установщик в target/release/bundle
 ```
 
 На Linux нужны `libwebkit2gtk-4.1-dev`, `libgtk-3-dev`, `librsvg2-dev`, `build-essential`, `pkg-config`.

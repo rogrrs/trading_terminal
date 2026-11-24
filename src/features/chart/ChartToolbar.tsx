@@ -1,10 +1,12 @@
 import { ArrowUpRight, Minus, MousePointer2, Move, Ruler, Square, Trash2, TrendingUp } from 'lucide-react';
 import { useAppStore, type ToolId } from '@/stores/settings';
-import { useDrawingStore } from '@/stores/drawings';
+import { useDrawingStore, type Drawing } from '@/stores/drawings';
 import { useTerminalStore } from '@/stores/terminal';
 import { Button } from '@/components/ui/button';
 import { Tooltip } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
+
+const EMPTY_DRAWINGS: Drawing[] = [];
 
 const TOOLS: Array<{ id: ToolId; label: string; icon: typeof Minus }> = [
   { id: 'cursor', label: 'Курсор', icon: MousePointer2 },
@@ -20,7 +22,7 @@ export function ChartToolbar() {
   const tool = useAppStore((state) => state.activeTool);
   const setTool = useAppStore((state) => state.setActiveTool);
   const symbol = useTerminalStore((state) => state.instrument?.id ?? '');
-  const drawings = useDrawingStore((state) => (symbol ? state.bySymbol[symbol] ?? [] : []));
+  const drawings = useDrawingStore((state) => (symbol ? state.bySymbol[symbol] : undefined)) ?? EMPTY_DRAWINGS;
   const clear = useDrawingStore((state) => state.clear);
 
   return (
