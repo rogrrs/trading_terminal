@@ -84,6 +84,20 @@ npm run dev            # Vite :5173 + Fastify :5175, /api проксируетс
 | `npm run desktop:dev` | Tauri dev (нужен Rust) |
 | `npm run desktop:build` | Tauri release-сборка под текущую платформу |
 
+### Скрипты в корне репозитория (Windows)
+
+| Файл | Что делает |
+|---|---|
+| `build.bat` | ставит зависимости и собирает веб-клиент + API-сервер (`dist/`, `dist-server/`) |
+| `build-desktop.bat` | ставит Rust при необходимости и собирает десктоп-приложение Tauri |
+| `start.bat` | запускает веб-версию (`http://127.0.0.1:5175`) |
+| `start-desktop.bat` | запускает собранный `.exe` десктоп-версии |
+| `update.bat` | обновляет код с GitHub и пересобирает; `update.bat --desktop` — пересобирает и десктоп |
+| `uninstall.bat` | останавливает, удаляет файлы программы, **данные сохраняет** |
+
+Все они — тонкие обёртки над `scripts/`: там лежит логика (`build.bat`, `build-desktop.bat`,
+`start.bat`, `start-desktop.bat`, `update.bat`, `install.bat`, `stop.bat`).
+
 ### Desktop
 
 ```bash
@@ -107,6 +121,9 @@ npm run desktop:build                # установщик в src-tauri/target/
 
 Положите три файла в пустую папку и дважды кликните нужный. Первый запуск скачает проект и поставит
 зависимости — это занимает несколько минут; ход виден в окне и в логе `start_*.log` рядом.
+
+Внутри клона те же операции делают скрипты из корня: `build.bat`, `build-desktop.bat`, `start.bat`,
+`start-desktop.bat`, `update.bat`, `uninstall.bat`.
 
 Данные (`data/`) не удаляются никогда — кроме случая, когда `uninstall.bat` запущен с `/purge`
 и вы вручную наберёте `DELETE`. Локальные правки перед обновлением сохраняются через `git stash`.
