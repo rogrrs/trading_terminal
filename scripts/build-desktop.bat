@@ -41,6 +41,10 @@ echo.
 
 set "NEED_INSTALL=0"
 if not exist "node_modules\.package-lock.json" set "NEED_INSTALL=1"
+rem A half-installed node_modules (interrupted npm ci) has no .bin\tsc.cmd.
+if not exist "node_modules\.bin\tsc.cmd" set "NEED_INSTALL=1"
+if not exist "node_modules\.bin\vite.cmd" set "NEED_INSTALL=1"
+if not exist "node_modules\.bin\cross-env.cmd" set "NEED_INSTALL=1"
 if "%NEED_INSTALL%"=="0" (
   powershell -NoProfile -ExecutionPolicy Bypass -Command "try { if ((Get-Item 'package-lock.json').LastWriteTimeUtc -gt (Get-Item 'node_modules\.package-lock.json').LastWriteTimeUtc) { exit 1 } else { exit 0 } } catch { exit 1 }"
   if errorlevel 1 set "NEED_INSTALL=1"

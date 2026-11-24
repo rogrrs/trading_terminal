@@ -24,6 +24,10 @@ if %NODE_MAJOR% LSS 20 goto :err_node
 rem ---- 1/4 dependencies -----------------------------------------------------
 set "NEED_INSTALL=0"
 if not exist "node_modules\.package-lock.json" set "NEED_INSTALL=1"
+rem A half-installed node_modules (interrupted npm ci) has no .bin\tsc.cmd.
+if not exist "node_modules\.bin\tsc.cmd" set "NEED_INSTALL=1"
+if not exist "node_modules\.bin\vite.cmd" set "NEED_INSTALL=1"
+if not exist "node_modules\.bin\cross-env.cmd" set "NEED_INSTALL=1"
 if "%NEED_INSTALL%"=="0" (
   powershell -NoProfile -ExecutionPolicy Bypass -Command "try { if ((Get-Item 'package-lock.json').LastWriteTimeUtc -gt (Get-Item 'node_modules\.package-lock.json').LastWriteTimeUtc) { exit 1 } else { exit 0 } } catch { exit 1 }"
   if errorlevel 1 set "NEED_INSTALL=1"
@@ -33,6 +37,7 @@ if "%NEED_INSTALL%"=="0" goto :deps_ready
 echo [1/4] Installing dependencies (only when needed)
 call npm install --prefer-offline --no-audit --no-fund
 if errorlevel 1 goto :err_npm
+if not exist "node_modules\.bin\tsc.cmd" goto :err_npm
 goto :deps_ready
 
 :deps_ready
@@ -77,8 +82,10 @@ exit /b 1
 :err_npm
 echo.
 echo ERROR: dependency installation failed.
-echo        Check the internet connection and run update.bat again.
-echo        node_modules was NOT removed, so the previous build still works.
+echo        The dependency folder may be damaged. Repair it with:
+echo            rd /s /q node_modules
+echo            npm install
+echo        then run update.bat again.
 if exist "dist.new" rd /s /q "dist.new"
 if exist "dist-server.new" rd /s /q "dist-server.new"
 if "%ARG_YES%"=="0" pause

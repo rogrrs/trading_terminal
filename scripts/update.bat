@@ -2,11 +2,15 @@
 rem ============================================================================
 rem  Trading Terminal: update the code from GitHub and rebuild.
 rem
-rem  - removes build output (dist, dist-server, target\release\bundle)
-rem  - keeps node_modules and the Rust incremental cache, so nothing is
-rem    re-downloaded unless package-lock.json changed
+rem  IMPORTANT: this file copies itself and the other scripts to %TEMP% before
+rem  doing anything. The update rewrites the scripts on disk, and a batch file
+rem  that is overwritten while it runs reads garbage ("1" is not a command).
+rem  Running from a copy makes the update safe.
+rem
+rem  - keeps node_modules and the Rust incremental cache
 rem  - keeps the data folder (data\)
 rem  - local edits are saved with git stash, never thrown away
+rem  - build.bat replaces dist\ and dist-server\ only after a successful build
 rem
 rem    update.bat              update and rebuild
 rem    update.bat --desktop    update, rebuild and rebuild the desktop app
@@ -15,15 +19,33 @@ rem
 rem  ASCII only, CRLF line endings.
 rem ============================================================================
 setlocal
+
 set "ARG_YES=0"
 set "ARG_DESKTOP=0"
 for %%A in (%*) do (
   if /i "%%~A"=="/yes" set "ARG_YES=1"
   if /i "%%~A"=="--desktop" set "ARG_DESKTOP=1"
 )
-cd /d "%~dp0.."
 
-if not exist ".git" goto :err_notrepo
+if /i "%~1"=="--child" goto :main
+
+set "WORK=%TEMP%\tt-update-%RANDOM%%RANDOM%"
+mkdir "%WORK%" >nul 2>&1
+copy /y "%~dp0*.bat" "%WORK%\" >nul 2>&1
+if not exist "%WORK%\update.bat" goto :main
+call "%WORK%\update.bat" --child "%~dp0.."
+set "RC=%ERRORLEVEL%"
+rd /s /q "%WORK%" >nul 2>&1
+exit /b %RC%
+
+:main
+set "PROJECT=%~dp0.."
+if /i "%~1"=="--child" set "PROJECT=%~2"
+for %%P in ("%PROJECT%") do set "PROJECT=%%~fP"
+
+if not exist "%PROJECT%\.git" goto :err_notrepo
+cd /d "%PROJECT%"
+
 where git >nul 2>&1
 if errorlevel 1 goto :err_git
 
@@ -48,13 +70,17 @@ git reset --hard "origin/%BRANCH%"
 if errorlevel 1 goto :err_reset
 
 rem ---- rebuild (build.bat replaces dist\ and dist-server\ atomically) ----
-call "%~dp0build.bat" %*
+set "PASS="
+if "%ARG_YES%"=="1" set "PASS=/yes"
+if "%ARG_DESKTOP%"=="1" set "PASS=%PASS% --desktop"
+
+call "%PROJECT%\scripts\build.bat" %PASS%
 if errorlevel 1 goto :err_build
 
 if "%ARG_DESKTOP%"=="0" goto :done
 echo.
 echo Rebuilding the desktop application...
-call "%~dp0build-desktop.bat" %*
+call "%PROJECT%\scripts\build-desktop.bat" %PASS%
 if errorlevel 1 goto :err_build
 
 :done
