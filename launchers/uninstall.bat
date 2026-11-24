@@ -54,6 +54,8 @@ rem ---------------------------------------------------------------- PROGRAM FOL
 call :remove "%PROJECT%node_modules"
 call :remove "%PROJECT%dist"
 call :remove "%PROJECT%dist-server"
+call :remove "%PROJECT%dist.new"
+call :remove "%PROJECT%dist-server.new"
 call :remove "%PROJECT%target"
 call :remove "%~dp0trading_terminal-delta\node_modules"
 call :remove "%~dp0trading_terminal-delta\dist"

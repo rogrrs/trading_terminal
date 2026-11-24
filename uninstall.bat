@@ -46,6 +46,8 @@ rem ---------------------------------------------------------------- PROGRAM FOL
 call :remove "%PROJECT%node_modules"
 call :remove "%PROJECT%dist"
 call :remove "%PROJECT%dist-server"
+call :remove "%PROJECT%dist.new"
+call :remove "%PROJECT%dist-server.new"
 call :remove "%PROJECT%target"
 call :remove "%PROJECT%src-tauri\target"
 rem ---------------------------------------------------------------------------
