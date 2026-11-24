@@ -82,7 +82,15 @@ impl TinkoffClient {
             .find_instrument(request)
             .await
             .map_err(|error| Error::Api(friendly_status(&error)))?;
-        Ok(response.into_inner().instruments.into_iter().map(map_instrument).collect())
+        let mapped: Vec<InstrumentDto> = response
+            .into_inner()
+            .instruments
+            .into_iter()
+            .map(map_instrument)
+            .collect();
+        // Expired contracts come back with api_trade_available_flag = false.
+        let tradable: Vec<InstrumentDto> = mapped.iter().filter(|item| item.tradeable).cloned().collect();
+        Ok(if tradable.is_empty() { mapped } else { tradable })
     }
 
     pub async fn get_candles(
@@ -157,6 +165,33 @@ impl TinkoffClient {
             time: timestamp_seconds(book.orderbook_ts) * 1000,
         })
     }
+}
+
+pub async fn get_last_prices(token: String, ids: Vec<String>) -> Result<Vec<(String, f64)>> {
+    let client = TinkoffClient::connect(token).await?;
+    let request = pb::GetLastPricesRequest {
+        instrument_id: ids,
+        ..Default::default()
+    };
+    let response = client
+        .market_data()
+        .get_last_prices(request)
+        .await
+        .map_err(|error| Error::Api(friendly_status(&error)))?;
+    Ok(response
+        .into_inner()
+        .last_prices
+        .into_iter()
+        .filter_map(|price| {
+            let id = if price.figi.is_empty() { price.instrument_uid } else { price.figi };
+            let value = quotation(price.price);
+            if id.is_empty() || !value.is_finite() {
+                None
+            } else {
+                Some((id, value))
+            }
+        })
+        .collect())
 }
 
 fn parse_iso(value: &str) -> Result<i64> {

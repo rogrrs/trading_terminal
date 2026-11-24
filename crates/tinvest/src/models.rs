@@ -3,6 +3,8 @@ use serde::Serialize;
 #[derive(Debug, Clone, Serialize)]
 pub struct InstrumentDto {
     pub id: String,
+    #[serde(rename = "tradeable")]
+    pub tradeable: bool,
     pub figi: String,
     pub ticker: String,
     pub name: String,
@@ -132,6 +134,7 @@ pub fn map_instrument(item: pb::InstrumentShort) -> InstrumentDto {
     let figi = item.figi.clone();
     let uid = item.uid.clone();
     InstrumentDto {
+        tradeable: item.api_trade_available_flag,
         id: if figi.is_empty() { item.uid.clone() } else { figi.clone() },
         figi,
         ticker: item.ticker,

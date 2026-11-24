@@ -1,9 +1,10 @@
-import { PanelRight, Settings2, KeyRound } from 'lucide-react';
+import { PanelLeft, PanelRight, Settings2, KeyRound, Star } from 'lucide-react';
 import { InstrumentSearch } from '@/features/instruments/InstrumentSearch';
 import { TIMEFRAMES } from '@/features/api/timeframes';
 import { useAppStore } from '@/stores/settings';
 import { useSettingsStore } from '@/stores/settings';
 import { useTerminalStore } from '@/stores/terminal';
+import { useWatchlistStore } from '@/stores/watchlist';
 import { formatPrice, precisionForPrice } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Tooltip } from '@/components/ui/tooltip';
@@ -41,6 +42,13 @@ export function TopBar() {
   );
   const showOrderBook = useSettingsStore((state) => state.showOrderBook);
   const setShowOrderBook = useSettingsStore((state) => state.setShowOrderBook);
+  const showWatchlist = useSettingsStore((state) => state.showWatchlist);
+  const setShowWatchlist = useSettingsStore((state) => state.setShowWatchlist);
+  const currentInstrument = useTerminalStore((state) => state.instrument);
+  const inWatchlist = useWatchlistStore((state) =>
+    currentInstrument ? state.has(currentInstrument.id) : false,
+  );
+  const toggleWatchlist = useWatchlistStore((state) => state.toggle);
   const setSettingsOpen = useAppStore((state) => state.setSettingsOpen);
   const setTokenDialogOpen = useAppStore((state) => state.setTokenDialogOpen);
   const token = useAppStore((state) => state.token);
@@ -74,6 +82,19 @@ export function TopBar() {
       <div className="ml-auto flex items-center gap-1.5">
         <StreamBadge />
 
+        <Tooltip content={inWatchlist ? 'Убрать из списка' : 'Добавить в список'}>
+          <Button
+            variant="ghost"
+            size="icon"
+            className={cn(!currentInstrument && 'opacity-40')}
+            disabled={!currentInstrument}
+            onClick={() => currentInstrument && toggleWatchlist(currentInstrument)}
+            aria-label={inWatchlist ? 'Убрать из списка' : 'Добавить в список'}
+          >
+            <Star className={cn('h-4 w-4', inWatchlist && 'fill-current text-warning')} />
+          </Button>
+        </Tooltip>
+
         <div className="no-scrollbar hidden items-center gap-0.5 overflow-x-auto md:flex">
           {TIMEFRAMES.map((item) => (
             <button
@@ -91,6 +112,18 @@ export function TopBar() {
             </button>
           ))}
         </div>
+
+        <Tooltip content={showWatchlist ? 'Скрыть списки' : 'Показать списки'}>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setShowWatchlist(!showWatchlist)}
+            className={cn('hidden md:inline-flex', showWatchlist && 'bg-accent')}
+            aria-label="Списки инструментов"
+          >
+            <PanelLeft className="h-4 w-4" />
+          </Button>
+        </Tooltip>
 
         <Tooltip content={showOrderBook ? 'Скрыть стакан' : 'Показать стакан'}>
           <Button

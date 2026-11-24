@@ -20,6 +20,7 @@ export class TinkoffError extends Error {
 
 export interface InstrumentDto {
   id: string;
+  tradeable: boolean;
   figi: string;
   ticker: string;
   name: string;
@@ -88,6 +89,8 @@ interface RawOrderBook {
 }
 
 interface RawInstrument {
+  apiTradeAvailableFlag?: boolean;
+  api_trade_available_flag?: boolean;
   figi?: string;
   ticker?: string;
   name?: string;
@@ -210,14 +213,14 @@ export async function findInstruments(token: string, query: string): Promise<Ins
     'FindInstrument',
     { query },
   );
-  return (data.instruments ?? [])
-    .filter((item) => item.figi || item.uid)
-    .map((item) => {
-      const figi = item.figi ?? '';
-      const uid = item.uid ?? undefined;
-      return {
-        id: figi || uid || '',
-        figi,
+  const all = (data.instruments ?? []).filter((item) => item.figi || item.uid);
+  const mapItem = (item: RawInstrument): InstrumentDto => {
+    const figi = item.figi ?? '';
+    const uid = item.uid ?? undefined;
+    return {
+      id: figi || uid || '',
+      tradeable: item.apiTradeAvailableFlag !== false && item.api_trade_available_flag !== false,
+      figi,
         ticker: item.ticker ?? '',
         name: item.name ?? '',
         kind: normalizeKind(item.instrumentKind ?? item.instrumentType ?? ''),
@@ -227,7 +230,32 @@ export async function findInstruments(token: string, query: string): Promise<Ins
         lot: Number(item.lot ?? 1),
         uid,
       };
-    });
+  };
+  // Expired contracts and instruments without API market data come back with
+  // apiTradeAvailableFlag = false. Drop them, but never return an empty answer
+  // if the flag is simply missing.
+  const mapped = all.map(mapItem);
+  const tradable = mapped.filter((item) => item.tradeable);
+  return tradable.length ? tradable : mapped;
+}
+
+export async function getLastPrices(
+  token: string,
+  instrumentIds: string[],
+): Promise<Record<string, number>> {
+  const data = await post<{ lastPrices?: Array<{ figi?: string; instrumentUid?: string; price?: unknown }> }>(
+    token,
+    `${SERVICE}.MarketDataService`,
+    'GetLastPrices',
+    { instruments: instrumentIds.map((id) => ({ instrumentId: id })) },
+  );
+  const result: Record<string, number> = {};
+  for (const item of data.lastPrices ?? []) {
+    const id = item.figi || item.instrumentUid;
+    const value = quotation(item.price);
+    if (id && Number.isFinite(value)) result[id] = value;
+  }
+  return result;
 }
 
 export interface CandlesQuery {

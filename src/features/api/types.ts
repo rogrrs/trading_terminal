@@ -15,6 +15,8 @@ export interface Instrument {
   lot: number;
   minPriceIncrement?: number;
   uid?: string;
+  /** False for expired contracts and instruments without API market data. */
+  tradeable?: boolean;
 }
 
 export interface Candle {
@@ -125,6 +127,8 @@ export interface BackendAdapter {
   searchInstruments(query: string): Promise<Instrument[]>;
   getCandles(req: CandlesRequest): Promise<Candle[]>;
   getOrderBook(req: { instrumentId: string; depth: number }): Promise<OrderBook>;
+  /** Last prices for several instruments, keyed by instrument id. */
+  getLastPrices(instrumentIds: string[]): Promise<Record<string, number>>;
   /** Returns an unsubscribe function. */
   subscribe(spec: SubscriptionSpec, handlers: StreamHandlers): Promise<() => void>;
   convertPine(req: AiConvertRequest): Promise<AiConvertResponse>;

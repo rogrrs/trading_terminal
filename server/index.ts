@@ -14,6 +14,7 @@ import {
 import {
   findInstruments,
   getCandles,
+  getLastPrices,
   getOrderBook,
   REST_ENDPOINT,
   TinkoffError,
@@ -130,6 +131,23 @@ app.post('/api/orderbook', async (request, reply) => {
     return await getOrderBook(token, body.instrumentId, Math.min(Math.max(body.depth ?? 20, 1), 100));
   } catch (error) {
     return fail(reply, error);
+  }
+});
+
+app.post('/api/lastprices', async (request, reply) => {
+  const token = await getToken();
+  if (!token) return reply.code(401).send({ error: 'Токен T-Invest не задан' });
+  const body = (request.body ?? {}) as { instrumentIds?: string[] };
+  const ids = Array.isArray(body.instrumentIds) ? body.instrumentIds.filter(Boolean).slice(0, 100) : [];
+  if (!ids.length) return reply.send({ lastPrices: {} });
+  try {
+    const lastPrices = await getLastPrices(token, ids);
+    return reply.send({ lastPrices });
+  } catch (error) {
+    const status = error instanceof TinkoffError ? (error.status ?? 502) : 502;
+    return reply.code(status).send({
+      error: error instanceof Error ? error.message : String(error),
+    });
   }
 });
 

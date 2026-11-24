@@ -78,6 +78,9 @@ export function ChartSurface({ indicators }: ChartSurfaceProps) {
   const candles = useTerminalStore((state) => state.candles);
   const status = useTerminalStore((state) => state.status);
   const error = useTerminalStore((state) => state.error);
+  const historyExhausted = useTerminalStore((state) => state.historyExhausted);
+  const loadingMore = useTerminalStore((state) => state.loadingMore);
+  const loadMoreHistory = useTerminalStore((state) => state.loadMoreHistory);
   const colors = useSettingsStore((state) => state.chart);
   const showGrid = useSettingsStore((state) => state.showGrid);
   const showVolume = useSettingsStore((state) => state.showVolume);
@@ -469,6 +472,17 @@ export function ChartSurface({ indicators }: ChartSurfaceProps) {
             Загрузка свечей…
           </div>
         </div>
+      )}
+
+      {candles.length > 0 && !historyExhausted && (
+        <button
+          type="button"
+          onClick={() => void loadMoreHistory()}
+          disabled={loadingMore}
+          className="absolute bottom-2 left-1/2 z-20 -translate-x-1/2 rounded-full border bg-card/90 px-3 py-1 text-[11px] font-medium text-muted-foreground shadow-sm backdrop-blur transition-colors hover:text-foreground disabled:opacity-60"
+        >
+          {loadingMore ? 'Загрузка…' : 'Загрузить ещё историю'}
+        </button>
       )}
 
       {status === 'error' && !candles.length && (

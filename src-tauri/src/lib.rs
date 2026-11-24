@@ -206,6 +206,15 @@ async fn orderbook_get(req: OrderBookRequest) -> Result<OrderBookDto, String> {
 }
 
 #[tauri::command]
+async fn lastprices_get(ids: Vec<String>) -> Result<std::collections::HashMap<String, f64>, String> {
+    let client = client().await?;
+    let prices = tinvest::client::get_last_prices(client.token.clone(), ids)
+        .await
+        .map_err(map_status)?;
+    Ok(prices.into_iter().collect())
+}
+
+#[tauri::command]
 async fn ai_config() -> Result<secrets::AiConfig, String> {
     Ok(secrets::get_ai_config().public_view())
 }
@@ -343,6 +352,7 @@ pub fn run() {
             instruments_search,
             candles_get,
             orderbook_get,
+            lastprices_get,
             stream_subscribe,
             stream_unsubscribe,
             ai_config,

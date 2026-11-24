@@ -1,4 +1,5 @@
 import { TerminalApiError } from './types';
+import { quotationToNumber } from '@/lib/utils';
 import type {
   AiConfig,
   AiConfigInput,
@@ -138,6 +139,21 @@ export class HttpBackend implements BackendAdapter {
 
   getOrderBook(req: { instrumentId: string; depth: number }): Promise<OrderBook> {
     return post<OrderBook>('/api/orderbook', req);
+  }
+
+  async getLastPrices(instrumentIds: string[]): Promise<Record<string, number>> {
+    if (!instrumentIds.length) return {};
+    const raw = await post<{ lastPrices?: Array<{ figi?: string; instrumentUid?: string; price?: unknown }> }>(
+      '/api/lastprices',
+      { instrumentIds },
+    );
+    const result: Record<string, number> = {};
+    for (const item of raw.lastPrices ?? []) {
+      const id = item.figi || item.instrumentUid;
+      const value = quotationToNumber(item.price as { units?: string; nano?: string } | undefined);
+      if (id && Number.isFinite(value)) result[id] = value;
+    }
+    return result;
   }
 
   async subscribe(spec: SubscriptionSpec, handlers: StreamHandlers): Promise<() => void> {

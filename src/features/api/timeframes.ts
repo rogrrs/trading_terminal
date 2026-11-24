@@ -12,6 +12,8 @@ export interface TimeframeConfig {
   /** How many bars we request (also respects the API per-interval limits). */
   bars: number;
   limit: number;
+  /** Max period the API accepts for this interval, in ms (docs: faq_marketdata). */
+  maxPeriodMs: number;
   streamable: boolean;
 }
 
@@ -25,6 +27,7 @@ export const TIMEFRAMES: TimeframeConfig[] = [
     ms: 60_000,
     bars: 500,
     limit: 2400,
+    maxPeriodMs: 86400000,
     streamable: true,
   },
   {
@@ -36,6 +39,7 @@ export const TIMEFRAMES: TimeframeConfig[] = [
     ms: 5 * 60_000,
     bars: 500,
     limit: 2400,
+    maxPeriodMs: 604800000,
     streamable: true,
   },
   {
@@ -47,6 +51,7 @@ export const TIMEFRAMES: TimeframeConfig[] = [
     ms: 15 * 60_000,
     bars: 500,
     limit: 2400,
+    maxPeriodMs: 1814400000,
     streamable: true,
   },
   {
@@ -58,6 +63,7 @@ export const TIMEFRAMES: TimeframeConfig[] = [
     ms: 3_600_000,
     bars: 800,
     limit: 2400,
+    maxPeriodMs: 7948800000,
     streamable: true,
   },
   {
@@ -69,6 +75,7 @@ export const TIMEFRAMES: TimeframeConfig[] = [
     ms: 4 * 3_600_000,
     bars: 700,
     limit: 700,
+    maxPeriodMs: 7948800000,
     streamable: true,
   },
   {
@@ -80,6 +87,7 @@ export const TIMEFRAMES: TimeframeConfig[] = [
     ms: 24 * 3_600_000,
     bars: 1000,
     limit: 2400,
+    maxPeriodMs: 189216000000,
     streamable: true,
   },
   {
@@ -91,6 +99,7 @@ export const TIMEFRAMES: TimeframeConfig[] = [
     ms: 7 * 24 * 3_600_000,
     bars: 200,
     limit: 300,
+    maxPeriodMs: 157680000000,
     streamable: true,
   },
 ];
@@ -106,4 +115,15 @@ export function candlesWindow(id: Timeframe, now = Date.now()): { from: string; 
   const from = new Date(now - tf.bars * tf.ms).toISOString();
   const to = new Date(now).toISOString();
   return { from, to, limit: tf.limit };
+}
+
+/** One GetCandles page: never wider than the interval allows. */
+export function candlesPage(id: Timeframe, toMs: number): { from: string; to: string; limit: number } {
+  const tf = getTimeframe(id);
+  const width = Math.min(tf.limit * tf.ms, tf.maxPeriodMs);
+  return {
+    from: new Date(toMs - width).toISOString(),
+    to: new Date(toMs).toISOString(),
+    limit: tf.limit,
+  };
 }

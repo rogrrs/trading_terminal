@@ -68,6 +68,10 @@ export class TauriBackend implements BackendAdapter {
     return this.invoke<OrderBook>('orderbook_get', { req });
   }
 
+  getLastPrices(instrumentIds: string[]): Promise<Record<string, number>> {
+    return this.invoke<Record<string, number>>('lastprices_get', { ids: instrumentIds });
+  }
+
   async subscribe(spec: SubscriptionSpec, handlers: StreamHandlers): Promise<() => void> {
     const { listen } = await this.events();
     await this.invoke<{ ok: boolean }>('stream_subscribe', { spec });

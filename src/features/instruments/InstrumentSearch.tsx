@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Search, Loader2, AlertTriangle } from 'lucide-react';
+import { Search, Loader2, AlertTriangle, Star } from 'lucide-react';
 import { backend } from '@/features/api';
 import type { Instrument } from '@/features/api/types';
 import { useAppStore } from '@/stores/settings';
 import { useTerminalStore } from '@/stores/terminal';
+import { useWatchlistStore } from '@/stores/watchlist';
 import { debounce } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -64,6 +65,8 @@ export function InstrumentSearch() {
   const instrument = useTerminalStore((state) => state.instrument);
   const setInstrument = useTerminalStore((state) => state.setInstrument);
   const setMobileTab = useAppStore((state) => state.setMobileTab);
+  const toggleWatchlist = useWatchlistStore((state) => state.toggle);
+  const inWatchlist = useWatchlistStore((state) => state.has);
   const [query, setQuery] = useState(instrument?.ticker ?? '');
   const [open, setOpen] = useState(false);
   const [results, setResults] = useState<Instrument[]>([]);
@@ -199,9 +202,10 @@ export function InstrumentSearch() {
           )}
 
           {results.map((item, index) => (
-            <button
+            <div
               key={`${item.figi}:${item.ticker}:${item.classCode}`}
-              type="button"
+              role="button"
+              tabIndex={0}
               onMouseDown={(event) => event.preventDefault()}
               onClick={() => choose(item)}
               onMouseEnter={() => setActive(index)}
@@ -209,6 +213,20 @@ export function InstrumentSearch() {
                 index === active ? 'bg-accent' : 'hover:bg-accent/60'
               }`}
             >
+              <button
+                type="button"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  toggleWatchlist(item);
+                }}
+                className="mt-0.5 shrink-0 text-muted-foreground hover:text-foreground"
+                aria-label={inWatchlist(item.id) ? 'Убрать из списка' : 'Добавить в список'}
+              >
+                <Star
+                  className={`h-3.5 w-3.5 ${inWatchlist(item.id) ? 'fill-current text-warning' : ''}`}
+                />
+              </button>
+
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
                   <span className="text-xs font-semibold">{item.ticker}</span>
@@ -222,7 +240,7 @@ export function InstrumentSearch() {
                 <div className="mt-0.5 truncate text-[11px] text-muted-foreground">{item.name}</div>
               </div>
               <span className="shrink-0 text-[10px] text-muted-foreground">{item.classCode}</span>
-            </button>
+            </div>
           ))}
         </div>
       )}

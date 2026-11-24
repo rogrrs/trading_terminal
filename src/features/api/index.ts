@@ -27,6 +27,7 @@ export const backend: BackendAdapter = {
   searchInstruments: (query) => getBackend().searchInstruments(query),
   getCandles: (req) => getBackend().getCandles(req),
   getOrderBook: (req) => getBackend().getOrderBook(req),
+  getLastPrices: (ids) => getBackend().getLastPrices(ids),
   subscribe: (spec, handlers) => getBackend().subscribe(spec, handlers),
   convertPine: (req) => getBackend().convertPine(req),
   getAiConfig: () => getBackend().getAiConfig(),

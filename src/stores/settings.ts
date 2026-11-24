@@ -18,6 +18,7 @@ export interface Settings {
   accent: string;
   chart: ChartColors;
   showOrderBook: boolean;
+  showWatchlist: boolean;
   showVolume: boolean;
   showGrid: boolean;
   orderBookDepth: number;
@@ -72,6 +73,7 @@ interface SettingsState extends Settings {
   setChartColors: (patch: Partial<ChartColors>) => void;
   resetChartColors: () => void;
   setShowOrderBook: (value: boolean) => void;
+  setShowWatchlist: (value: boolean) => void;
   setShowVolume: (value: boolean) => void;
   setShowGrid: (value: boolean) => void;
   setOrderBookDepth: (value: number) => void;
@@ -86,6 +88,7 @@ const defaultSettings: Settings = {
   accent: THEME_PRESETS.dark.accent,
   chart: { ...THEME_PRESETS.dark.chart },
   showOrderBook: true,
+  showWatchlist: true,
   showVolume: true,
   showGrid: true,
   orderBookDepth: 20,
@@ -111,6 +114,7 @@ export const useSettingsStore = create<SettingsState>()(
       setChartColors: (patch) => set({ chart: { ...get().chart, ...patch } }),
       resetChartColors: () => set({ chart: { ...THEME_PRESETS[get().theme].chart } }),
       setShowOrderBook: (showOrderBook) => set({ showOrderBook }),
+      setShowWatchlist: (showWatchlist) => set({ showWatchlist }),
       setShowVolume: (showVolume) => set({ showVolume }),
       setShowGrid: (showGrid) => set({ showGrid }),
       setOrderBookDepth: (orderBookDepth) => set({ orderBookDepth }),
@@ -127,6 +131,7 @@ export const useSettingsStore = create<SettingsState>()(
         accent: state.accent,
         chart: state.chart,
         showOrderBook: state.showOrderBook,
+        showWatchlist: state.showWatchlist,
         showVolume: state.showVolume,
         showGrid: state.showGrid,
         orderBookDepth: state.orderBookDepth,
@@ -143,7 +148,7 @@ export interface AppState {
   health: Health | null;
   token: TokenStatus | null;
   tokenChecked: boolean;
-  mobileTab: 'chart' | 'orderbook' | 'indicators' | 'settings';
+  mobileTab: 'chart' | 'watchlist' | 'orderbook' | 'indicators' | 'settings';
   activeTool: ToolId;
   settingsOpen: boolean;
   tokenDialogOpen: boolean;
