@@ -29,8 +29,15 @@
   },
   "bundle": {
     "active": true,
-    "targets": ["deb", "appimage", "rpm", "nsis", "msi"],
+    "targets": [
+      "deb",
+      "appimage",
+      "rpm",
+      "nsis",
+      "msi"
+    ],
     "icon": [
+      "icons/icon.ico",
       "icons/icon.png"
     ],
     "category": "Finance",
