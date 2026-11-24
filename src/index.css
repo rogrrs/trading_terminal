@@ -1,0 +1,201 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+:root,
+[data-theme="dark"] {
+  --background: #0e1116;
+  --foreground: #d1d4dc;
+  --card: #131722;
+  --card-foreground: #d1d4dc;
+  --popover: #1b1f2a;
+  --popover-foreground: #d1d4dc;
+  --primary: #2962ff;
+  --primary-foreground: #ffffff;
+  --secondary: #1e222d;
+  --secondary-foreground: #d1d4dc;
+  --muted: #1e222d;
+  --muted-foreground: #787b86;
+  --accent: #22262f;
+  --accent-foreground: #ffffff;
+  --destructive: #f23645;
+  --destructive-foreground: #ffffff;
+  --border: #1e222d;
+  --input: #2a2e39;
+  --ring: #2962ff;
+  --radius: 0.375rem;
+
+  --chart-bg: #131722;
+  --chart-grid: #1e222d;
+  --chart-text: #d1d4dc;
+  --chart-crosshair: #758696;
+  --up: #089981;
+  --down: #f23645;
+  --accent-ui: #2962ff;
+}
+
+[data-theme="light"] {
+  --background: #ffffff;
+  --foreground: #131722;
+  --card: #ffffff;
+  --card-foreground: #131722;
+  --popover: #ffffff;
+  --popover-foreground: #131722;
+  --primary: #2962ff;
+  --primary-foreground: #ffffff;
+  --secondary: #f0f3fa;
+  --secondary-foreground: #131722;
+  --muted: #f0f3fa;
+  --muted-foreground: #6a6d78;
+  --accent: #f0f3fa;
+  --accent-foreground: #131722;
+  --destructive: #f23645;
+  --destructive-foreground: #ffffff;
+  --border: #e0e3eb;
+  --input: #e0e3eb;
+  --ring: #2962ff;
+
+  --chart-bg: #ffffff;
+  --chart-grid: #e0e3eb;
+  --chart-text: #131722;
+  --chart-crosshair: #9598a1;
+  --up: #089981;
+  --down: #f23645;
+  --accent-ui: #2962ff;
+}
+
+[data-theme="midnight"] {
+  --background: #000000;
+  --foreground: #d7dae0;
+  --card: #050505;
+  --card-foreground: #d7dae0;
+  --popover: #0a0a0c;
+  --popover-foreground: #d7dae0;
+  --primary: #7c5cff;
+  --primary-foreground: #ffffff;
+  --secondary: #121317;
+  --secondary-foreground: #d7dae0;
+  --muted: #121317;
+  --muted-foreground: #6f7683;
+  --accent: #17181d;
+  --accent-foreground: #ffffff;
+  --destructive: #ff3b5c;
+  --destructive-foreground: #ffffff;
+  --border: #17181d;
+  --input: #202228;
+  --ring: #7c5cff;
+
+  --chart-bg: #050505;
+  --chart-grid: #16181d;
+  --chart-text: #c9cdd6;
+  --chart-crosshair: #5f6673;
+  --up: #00c2a8;
+  --down: #ff3b5c;
+  --accent-ui: #7c5cff;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-bg: var(--chart-bg);
+  --color-chart-grid: var(--chart-grid);
+  --color-chart-text: var(--chart-text);
+  --color-chart-crosshair: var(--chart-crosshair);
+  --color-up: var(--up);
+  --color-down: var(--down);
+  --color-accent-ui: var(--accent-ui);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    overscroll-behavior: none;
+  }
+
+  button,
+  [role="button"] {
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+@layer utilities {
+  .tnum {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum" 1;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+  }
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 8px;
+  }
+}
+
+/* The chart owns its own canvas stack; never let text selection fight it. */
+.chart-surface {
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: pan-y;
+}
+
+.chart-surface canvas {
+  outline: none;
+}
+
+/* Chart rendering is synchronous; isolate repaints on mobile. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

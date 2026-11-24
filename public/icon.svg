@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Trading Terminal">
+  <rect width="512" height="512" rx="96" fill="#131722"/>
+  <g stroke-linecap="round">
+    <line x1="150" y1="150" x2="150" y2="362" stroke="#089981" stroke-width="14"/>
+    <rect x="120" y="220" width="60" height="92" fill="#089981"/>
+    <line x1="256" y1="110" x2="256" y2="402" stroke="#f23645" stroke-width="14"/>
+    <rect x="226" y="176" width="60" height="124" fill="#f23645"/>
+    <line x1="362" y1="196" x2="362" y2="316" stroke="#2962ff" stroke-width="14"/>
+    <rect x="332" y="236" width="60" height="52" fill="#2962ff"/>
+  </g>
+</svg>

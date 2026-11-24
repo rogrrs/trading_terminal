@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+package google.api;
+
+import "google/protobuf/descriptor.proto";
+
+// Vendored copy of google/api/field_behavior.proto (Apache-2.0) so the build
+// does not depend on the protobuf compiler or the googleapis repository.
+//
+// An annotation that describes a resource or method, typically as a
+// google.protobuf.FieldOptions on a request message field.
+enum FieldBehavior {
+  // An unspecified field behavior.
+  FIELD_BEHAVIOR_UNSPECIFIED = 0;
+  // Specifically denotes a field as optional.
+  OPTIONAL = 1;
+  // Denotes a field as required.
+  REQUIRED = 2;
+  // Denotes a field as output only.
+  OUTPUT_ONLY = 3;
+  // Denotes a field as input only.
+  INPUT_ONLY = 4;
+  // Denotes a field as immutable.
+  IMMUTABLE = 5;
+  // Denotes a field as unordered list.
+  UNORDERED_LIST = 6;
+  // Denotes a field as non-empty default.
+  NON_EMPTY_DEFAULT = 7;
+  // Denotes a field as identifier.
+  IDENTIFIER = 8;
+}
+
+extend google.protobuf.FieldOptions {
+  // A designation of a specific field behavior (required, output only, etc.)
+  // in protobuf messages.
+  repeated google.api.FieldBehavior field_behavior = 1052 [packed = false];
+}

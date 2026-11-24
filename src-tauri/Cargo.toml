@@ -1,0 +1,26 @@
+[package]
+name = "trading-terminal"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Lightweight T-Invest API trading terminal (Tauri v2)"
+default-run = "trading-terminal"
+
+[lib]
+name = "trading_terminal_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tinvest = { path = "../crates/tinvest" }
+tauri = { version = "2", features = [] }
+tauri-plugin-opener = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "sync", "time"] }
+reqwest = { version = "0.12", default-features = false, features = ["json", "rustls-tls-native-roots"] }
+keyring = { version = "3", features = ["linux-native"] }
+directories = "6"
+thiserror = "2"

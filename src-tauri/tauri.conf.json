@@ -1,0 +1,40 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Trading Terminal",
+  "version": "0.1.0",
+  "identifier": "dev.rogrrs.tradingterminal",
+  "build": {
+    "beforeDevCommand": "npm run dev:web",
+    "beforeBuildCommand": "npm run build",
+    "devUrl": "http://localhost:5173",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "Trading Terminal",
+        "label": "main",
+        "width": 1280,
+        "height": 760,
+        "minWidth": 960,
+        "minHeight": 600,
+        "resizable": true,
+        "center": true,
+        "decorations": true
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; connect-src 'self' ipc: http://ipc.localhost; img-src 'self' data: asset: http://asset.localhost; style-src 'self' 'unsafe-inline'; font-src 'self' data:; script-src 'self' 'wasm-unsafe-eval'"
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["deb", "appimage", "rpm", "nsis", "msi"],
+    "icon": [
+      "icons/icon.png"
+    ],
+    "category": "Finance",
+    "shortDescription": "Lightweight T-Invest trading terminal",
+    "longDescription": "Lightweight trading terminal for T-Invest API with TradingView-style charts, order book and custom indicators."
+  }
+}
