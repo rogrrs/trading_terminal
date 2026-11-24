@@ -69,11 +69,15 @@ export const useTerminalStore = create<TerminalState>((set, get) => ({
         limit: window.limit,
       });
       if (get().requestId !== requestId) return;
+      const list = candles.filter((c) => Number.isFinite(c.open) && Number.isFinite(c.close));
       set({
-        candles: candles.filter((c) => Number.isFinite(c.open) && Number.isFinite(c.close)),
-        status: candles.length ? 'ready' : 'error',
-        error: candles.length ? null : 'Биржа не вернула свечи за запрошенный период',
-        lastBarAt: candles.length ? candles[candles.length - 1]!.time : null,
+        candles: list,
+        status: list.length ? 'ready' : 'error',
+        error: list.length
+          ? null
+          : `Биржа не вернула свечи за запрошенный период (${instrument.ticker || instrument.id}, ${timeframe}). ` +
+            'Частая причина — выбран истёкший контракт (например, фьючерс прошлых серий). Попробуйте другой инструмент или таймфрейм.',
+        lastBarAt: list.length ? list[list.length - 1]!.time : null,
       });
     } catch (error) {
       if (get().requestId !== requestId) return;

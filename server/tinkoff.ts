@@ -128,6 +128,12 @@ async function post<T>(token: string, service: string, method: string, body: unk
     );
   }
 
+  const raw = await response.text();
+  if (process.env.DEBUG_TINKOFF === '1') {
+    const preview = raw.length > 600 ? `${raw.slice(0, 600)}…` : raw;
+    console.log(`[tinkoff] ${service}.${method} ${JSON.stringify(body)} -> ${response.status} ${preview}`);
+  }
+
   if (!response.ok) {
     let payload: { message?: string; code?: string } = {};
     try {
@@ -144,7 +150,7 @@ async function post<T>(token: string, service: string, method: string, body: unk
     throw new TinkoffError(payload.message || fallback, response.status, payload.code);
   }
 
-  return (await response.json()) as T;
+  return JSON.parse(raw) as T;
 }
 
 /** Quotation {units, nano} -> number, with a fallback for plain numbers. */

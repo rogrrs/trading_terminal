@@ -23,6 +23,38 @@ const KIND_LABELS: Record<string, string> = {
   'clearing-certificate': 'Сертификат',
 };
 
+/** Spot instruments first: search often returns expired futures (WUSh4) before the share. */
+const KIND_PRIORITY: Record<string, number> = {
+  share: 0,
+  stock: 0,
+  etf: 1,
+  bond: 2,
+  currency: 3,
+  index: 4,
+  futures: 5,
+  future: 5,
+  option: 6,
+  commodity: 7,
+  sp: 8,
+  'clearing-certificate': 9,
+};
+
+function sortInstruments(list: Instrument[], query: string): Instrument[] {
+  const needle = query.trim().toUpperCase();
+  const priority = (item: Instrument): number => {
+    const kind = item.kind.toLowerCase().replace(/^instrument[-_]?type[-_]?/, '');
+    return KIND_PRIORITY[kind] ?? 10;
+  };
+  return [...list].sort((a, b) => {
+    const exactA = a.ticker.toUpperCase() === needle ? 0 : 1;
+    const exactB = b.ticker.toUpperCase() === needle ? 0 : 1;
+    if (exactA !== exactB) return exactA - exactB;
+    const byKind = priority(a) - priority(b);
+    if (byKind !== 0) return byKind;
+    return a.ticker.length - b.ticker.length || a.ticker.localeCompare(b.ticker);
+  });
+}
+
 function kindLabel(kind: string): string {
   const normalized = kind.toLowerCase().replace(/^instrument[-_]?type[-_]?/, '').replace(/_/g, '-');
   return (KIND_LABELS[normalized] ?? kind) || 'Инструмент';
@@ -56,7 +88,7 @@ export function InstrumentSearch() {
         setError(null);
         try {
           const found = await backend.searchInstruments(value.trim());
-          setResults(found);
+          setResults(sortInstruments(found, value));
           setActive(0);
         } catch (err) {
           setError(err instanceof Error ? err.message : 'Поиск недоступен');

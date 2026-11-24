@@ -59,6 +59,14 @@ npm run dev            # Vite :5173 + Fastify :5175, /api проксируетс
 
 Токен никогда не попадает в репозиторий, в логи и в батники. `npm run check:secrets` проверяет это перед сборкой.
 
+### Если «нет данных»
+
+1. `npm run diagnose` — покажет, что реально отвечает T-Invest для инструмента
+   (свечи, стакан, последние цены). Пришлите вывод целиком.
+2. `npm run start:debug` — сервер пишет каждый запрос к T-Invest и код ответа.
+3. Частая причина: в поиске выбран **истёкший фьючерс** (например, `WUSh4`) — у него нет свечей
+   за текущий период. Выбирайте акцию/фьючерс текущей серии: они идут первыми в списке.
+
 ### Сертификат НУЦ Минцифры
 
 `invest-public-api.tbank.ru` использует сертификат российского УЦ, которого нет в стандартном
@@ -81,6 +89,8 @@ npm run dev            # Vite :5173 + Fastify :5175, /api проксируетс
 | `npm test` | Vitest (движок индикаторов) |
 | `npm run typecheck` | фронтенд + сервер |
 | `npm run verify` | typecheck → tests → build → build:server → check:secrets |
+| `npm run diagnose` | диагностика: дёргает T-Invest API напрямую и печатает сырые ответы |
+| `npm run start:debug` | сервер с подробными логами запросов к T-Invest (`DEBUG_TINKOFF=1`) |
 | `npm run desktop:dev` | Tauri dev (нужен Rust) |
 | `npm run desktop:build` | Tauri release-сборка под текущую платформу |
 

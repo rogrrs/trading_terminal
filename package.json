@@ -22,7 +22,9 @@
     "desktop:dev": "tauri dev",
     "desktop:build": "tauri build",
     "check:secrets": "node scripts/check-secrets.mjs",
-    "verify": "npm run typecheck && npm run test && npm run build && npm run build:server && npm run check:secrets"
+    "verify": "npm run typecheck && npm run test && npm run build && npm run build:server && npm run check:secrets",
+    "diagnose": "cross-env NODE_EXTRA_CA_CERTS=contracts/certs/russian-trusted-root-ca.pem node scripts/diagnose.mjs",
+    "start:debug": "cross-env LOG_LEVEL=debug DEBUG_TINKOFF=1 NODE_EXTRA_CA_CERTS=contracts/certs/russian-trusted-root-ca.pem node dist-server/server/index.js"
   },
   "dependencies": {
     "@codemirror/lang-javascript": "^6.2.5",
